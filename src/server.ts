@@ -1,19 +1,24 @@
-import express, { Express, Request, Response } from "express";
+import express from "express";
+import cors from "cors";
 import { PrismaClient } from '@prisma/client';
 import { processQuestion } from './service/chat-service';
 import dotenv from "dotenv";
 dotenv.config();
 
-const app: Express = express();
+const app = express();
 const prisma = new PrismaClient();
 
+// Use CORS middleware to allow all origins
+app.use(cors());
+
+// Parse JSON bodies
 app.use(express.json());
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (req: any, res: any) => {
   res.send("Hello World");
 });
 
-app.post('/api/chat/:userId', async (req  : any, res: any) => {
+app.post('/api/chat/:userId', async (req: any, res: any) => {
   const { userId } = req.params;
   const { content } = req.body;
 
@@ -72,8 +77,8 @@ app.get('/api/chat/:userId', async (req: any, res: any) => {
   }
 });
 
-// to routes which are not defined in the server.ts file
-app.use((req: Request, res: Response) => {
+// Handle undefined routes
+app.use((req: any, res: any) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
